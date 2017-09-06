@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import com.zsoft.signala.SendCallback;
 import com.zsoft.signala.hubs.HubConnection;
 import com.zsoft.signala.hubs.HubInvokeCallback;
 import com.zsoft.signala.hubs.HubOnDataCallback;
@@ -88,7 +89,7 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 		};
 		
 		try {
-			hub = con.CreateHubProxy("calculatorHub");
+			hub = con.CreateHubProxy("MyHub");
 		} catch (OperationApplicationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,8 +123,20 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 //		sb.append(value2);
 //		sb.append(" = ");
 //		sb.append(answer);
+
+		con.Send("{ \"Cmd\": 90021010101010, \"SeqId\": 1,  \"Data\":\"\" }", new SendCallback() {
+			public void OnError(Exception ex)
+			{
+				Toast.makeText(MainActivity.this, "Error when sending: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+			}
+			public void OnSent(CharSequence message)
+			{
+				Toast.makeText(MainActivity.this, "Sent: " + message, Toast.LENGTH_SHORT).show();
+			}
+
+		});
 		
-		HubInvokeCallback callback = new HubInvokeCallback() {
+		/*HubInvokeCallback callback = new HubInvokeCallback() {
 			@Override
 			public void OnResult(boolean succeeded, String response) {
 				Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
@@ -138,7 +151,7 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 		List<Integer> args = new ArrayList<Integer>(2);
 		args.add(value1);
 		args.add(value2);
-		hub.Invoke(operator, args, callback);
+		hub.Invoke(operator, args, callback);*/
 		
 	}
 

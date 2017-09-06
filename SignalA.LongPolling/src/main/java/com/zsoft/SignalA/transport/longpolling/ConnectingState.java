@@ -57,7 +57,13 @@ public class ConnectingState extends StopableStateWithCallback {
                         JSONObject json = JSONHelper.ToJSONObject(httpResponse.getBodyAsString());
                         if (json!=null)
                         {
-                            ProcessResult result = TransportHelper.ProcessResponse(mConnection, json);
+                            //先直接设置连接状态为连接状态
+                            mConnection.SetNewState(new ConnectedState(mConnection));
+
+
+
+                            //返回的json内容不一样所以这里先不做判断
+                            /*ProcessResult result = TransportHelper.ProcessResponse(mConnection, json);
 
                             if(result.processingFailed)
                             {
@@ -76,7 +82,7 @@ public class ConnectingState extends StopableStateWithCallback {
                             else
                             {
                                 mConnection.SetNewState(new DisconnectedState(mConnection));
-                            }
+                            }*/
                         }
                         else
                         {
