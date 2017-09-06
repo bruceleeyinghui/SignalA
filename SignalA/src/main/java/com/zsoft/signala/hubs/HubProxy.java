@@ -23,7 +23,7 @@ public class HubProxy implements IHubProxy {
 		mHubName = hubName;
 	}
 
-	
+
 	public void Invoke(final String method, Collection<?> args,
 			HubInvokeCallback callback) {
 
@@ -51,7 +51,7 @@ public class HubProxy implements IHubProxy {
 
         String value = hubData.Serialize();
 
-        mConnection.Send(value, new SendCallback() 
+        mConnection.Send(value, new SendCallback()
         {
 			@Override
 			public void OnSent(CharSequence messageSent) {
@@ -69,27 +69,27 @@ public class HubProxy implements IHubProxy {
         });
     }
 
-	
 
-	public void On(String eventName, HubOnDataCallback callback) 
+
+	public void On(String eventName, HubOnDataCallback callback)
 	{
 		Subscribe(eventName, callback);
 	}
-	
-	
+
+
 	public void Subscribe(String eventName, HubOnDataCallback callback)
 	{
 		if(eventName==null) throw new IllegalArgumentException("eventName can not be null");
 		if(callback==null) throw new IllegalArgumentException("callback can not be null");
 
 		eventName = eventName.toLowerCase(Locale.US);
-		
+
 		if(!mSubscriptions.containsKey(eventName))
 		{
 			mSubscriptions.put(eventName, callback);
 		}
 	}
-	
+
 	// K�r event lokalt som anropas fr�n servern och som registrerats i ON-metod.
     public void InvokeEvent(String eventName, JSONArray args)
     {

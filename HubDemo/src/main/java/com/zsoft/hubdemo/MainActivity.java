@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.zsoft.signala.SendCallback;
 import com.zsoft.signala.hubs.HubConnection;
 import com.zsoft.signala.hubs.HubInvokeCallback;
@@ -95,7 +100,7 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 			e.printStackTrace();
 		}
 		
-		hub.On("NewCalculation", new HubOnDataCallback() 
+		hub.On("send", new HubOnDataCallback()
 		{
 			@Override
 			public void OnReceived(JSONArray args) {
@@ -124,7 +129,7 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 //		sb.append(" = ");
 //		sb.append(answer);
 
-		con.Send("{ \"Cmd\": 90021010101010, \"SeqId\": 1,  \"Data\":\"\" }", new SendCallback() {
+		/*con.Send("{ \"Cmd\": 90021010101010, \"SeqId\": 1,  \"Data\":\"\" }", new SendCallback() {
 			public void OnError(Exception ex)
 			{
 				Toast.makeText(MainActivity.this, "Error when sending: " + ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -134,9 +139,9 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 				Toast.makeText(MainActivity.this, "Sent: " + message, Toast.LENGTH_SHORT).show();
 			}
 
-		});
+		});*/
 		
-		/*HubInvokeCallback callback = new HubInvokeCallback() {
+		HubInvokeCallback callback = new HubInvokeCallback() {
 			@Override
 			public void OnResult(boolean succeeded, String response) {
 				Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
@@ -148,10 +153,19 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 			}
 		};
 		
-		List<Integer> args = new ArrayList<Integer>(2);
-		args.add(value1);
-		args.add(value2);
-		hub.Invoke(operator, args, callback);*/
+		List<JSONObject> args = new ArrayList<JSONObject>();
+		Bean bean = new Bean(9002,1,"");
+		Gson gson2=new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+		String sobj2=gson2.toJson(bean);
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = new JSONObject(sobj2);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		args.add(jsonObject);
+//		args.add(value2);
+		hub.Invoke( "send", args, callback);
 		
 	}
 
