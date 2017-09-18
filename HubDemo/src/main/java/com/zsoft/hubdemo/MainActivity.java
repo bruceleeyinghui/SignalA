@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.zsoft.signala.SendCallback;
+import com.zsoft.hubdemo.utils.MyDesUtils;
 import com.zsoft.signala.hubs.HubConnection;
 import com.zsoft.signala.hubs.HubInvokeCallback;
 import com.zsoft.signala.hubs.HubOnDataCallback;
@@ -18,12 +18,14 @@ import com.zsoft.signala.hubs.IHubProxy;
 import com.zsoft.signala.transport.StateBase;
 import com.zsoft.signala.transport.longpolling.LongPollingTransport;
 
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +41,7 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 	protected HubConnection con = null;
 	protected IHubProxy hub = null;
 	protected TextView tvStatus = null;
-	private Boolean mShowAll = false;
+	private Boolean mShowAll = true;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,13 +96,14 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 		};
 		
 		try {
+			//代理 名称需要跟服务器一致
 			hub = con.CreateHubProxy("MyHub");
 		} catch (OperationApplicationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		hub.On("send", new HubOnDataCallback()
+		//第一个参数需要跟服务器一致
+		hub.On("addMessage", new HubOnDataCallback()
 		{
 			@Override
 			public void OnReceived(JSONArray args) {
@@ -108,7 +111,8 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 				{
 					for(int i=0; i<args.length(); i++)
 					{
-						Toast.makeText(MainActivity.this, args.opt(i).toString(), Toast.LENGTH_SHORT).show();
+						String s = args.opt(i).toString();
+						Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
@@ -140,8 +144,20 @@ public class MainActivity extends FragmentActivity implements OnDisconnectionReq
 			}
 
 		});*/
-		
-		HubInvokeCallback callback = new HubInvokeCallback() {
+
+		Intent intent = new Intent(this,WebViewActivity.class);
+        startActivity(intent);
+
+
+        try {
+			String utf = java.net.URLDecoder.decode("SuS0sJtW69diVmaWBrcl9X6XtbSZ2ZQYOhHcPqWRWHD1ypjloYCEMRXBGFXVIoeivpC62PjNbxcsvImUkP8eQA%3d%3d",   "utf-8");
+            String s = MyDesUtils.desEncrypt(utf);
+            Log.e("jiemi",s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        HubInvokeCallback callback = new HubInvokeCallback() {
 			@Override
 			public void OnResult(boolean succeeded, String response) {
 				Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
